@@ -2,8 +2,6 @@ package youtube_test
 
 import (
 	"fmt"
-	"net/url"
-
 	"github.com/roman-kart/gocommons/random"
 	"github.com/roman-kart/gocommons/youtube"
 )
@@ -12,10 +10,6 @@ type testGetVideoIdData struct {
 	Url     string
 	VideoId string
 	Err     error
-}
-
-type benchVideoIdData struct {
-	Url *url.URL
 }
 
 type testGetThumbnailRequestUrl struct {
@@ -97,25 +91,6 @@ func getRandomUrlStrAndVideoId() (string, string) {
 	}
 
 	return urlStr, videoId
-}
-
-func getBenchVideoIdDataRandomValid(cnt int) ([]benchVideoIdData, error) {
-	data := make([]benchVideoIdData, 0, cnt)
-
-	for range cnt {
-		urlStr, _ := getRandomUrlStrAndVideoId()
-
-		videoUrl, err := url.Parse(urlStr)
-		if err != nil {
-			return nil, err
-		}
-
-		data = append(data, benchVideoIdData{
-			Url: videoUrl,
-		})
-	}
-
-	return data, nil
 }
 
 func getTestGetThumbnailRequestUrlStable() []testGetThumbnailRequestUrl {
