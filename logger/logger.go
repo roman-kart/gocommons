@@ -50,7 +50,9 @@ func (cfg *Config) AfterLoad() error {
 	return nil
 }
 
-func New(cfg *Config) (*zap.Logger, func() error, error) {
+// NewLogger returns new instance of zap.Logger.
+// Config must be validated by validator package.
+func NewLogger(cfg *Config) (*zap.Logger, func() error, error) {
 	ws := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   cfg.File,
 		MaxSize:    cfg.MaxSize, // MB
@@ -81,7 +83,7 @@ func New(cfg *Config) (*zap.Logger, func() error, error) {
 	return zapLogger, func() error { return zapLogger.Sync() }, nil
 }
 
-func NewConsole(level zapcore.Level, dev bool) (*zap.Logger, func() error) {
+func NewConsoleLogger(level zapcore.Level, dev bool) (*zap.Logger, func() error) {
 	encoderConfig := zap.NewProductionEncoderConfig()
 
 	if dev {

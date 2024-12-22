@@ -25,7 +25,7 @@ func GetLogger(t *testing.T, lvl string, dev bool) *zap.Logger {
 
 	require.NoError(t, cfg.AfterLoad())
 
-	l, syncL, err := logger.New(cfg)
+	l, syncL, err := logger.NewLogger(cfg)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
@@ -38,7 +38,7 @@ func GetLogger(t *testing.T, lvl string, dev bool) *zap.Logger {
 func GetConsoleLogger(t *testing.T, lvl zapcore.Level) *zap.Logger {
 	t.Helper()
 
-	l, syncL := logger.NewConsole(lvl, true)
+	l, syncL := logger.NewConsoleLogger(lvl, true)
 
 	t.Cleanup(func() {
 		_ = syncL()
