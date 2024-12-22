@@ -2,12 +2,16 @@ package filesys
 
 import (
 	"errors"
+	"fmt"
 	"os"
 )
 
-var ErrPathNotExists = errors.New("path not exists")
-var ErrPathIsNotDirectory = errors.New("provided path is not a directory")
+var (
+	ErrPathNotExists      = errors.New("path not exists")
+	ErrPathIsNotDirectory = errors.New("provided path is not a directory")
+)
 
+// IsDirectory return nil if path exists and is a directory.
 func IsDirectory(path string) error {
 	fi, err := os.Stat(path)
 
@@ -16,7 +20,7 @@ func IsDirectory(path string) error {
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("unexpected error with path: %w", err)
 	}
 
 	if !fi.IsDir() {
