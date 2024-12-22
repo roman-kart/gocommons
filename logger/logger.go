@@ -58,10 +58,15 @@ func New(cfg *Config) (*zap.Logger, func() error, error) {
 		MaxAge:     cfg.MaxAge, // days
 		Compress:   cfg.Compress,
 	})
+
+	encoderConfig := zap.NewProductionEncoderConfig()
+
+	if cfg.Dev {
+		encoderConfig = zap.NewDevelopmentEncoderConfig()
+	}
+
 	core := zapcore.NewCore(
-		// use NewConsoleEncoder for human-readable output
-		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
-		// write to stdout as well as log files
+		zapcore.NewJSONEncoder(encoderConfig),
 		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), ws),
 		zap.NewAtomicLevelAt(cfg.ZapLvl),
 	)
@@ -73,7 +78,28 @@ func New(cfg *Config) (*zap.Logger, func() error, error) {
 		zapLogger = zap.New(core)
 	}
 
-	zap.ReplaceGlobals(zapLogger)
-
 	return zapLogger, func() error { return zapLogger.Sync() }, nil
+}
+
+func NewConsole(level zapcore.Level, dev bool) (*zap.Logger, func() error) {
+	encoderConfig := zap.NewProductionEncoderConfig()
+
+	if dev {
+		encoderConfig = zap.NewDevelopmentEncoderConfig()
+	}
+
+	core := zapcore.NewCore(
+		zapcore.NewConsoleEncoder(encoderConfig),
+		os.Stdout,
+		zap.NewAtomicLevelAt(level),
+	)
+
+	var zapLogger *zap.Logger
+	if dev {
+		zapLogger = zap.New(core, zap.AddCaller(), zap.Development())
+	} else {
+		zapLogger = zap.New(core)
+	}
+
+	return zapLogger, func() error { return zapLogger.Sync() }
 }
